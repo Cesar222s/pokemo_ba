@@ -18,8 +18,21 @@ const PORT = process.env.PORT || 3000;
 // ============================================
 // MIDDLEWARE
 // ============================================
+// Configuración de CORS para permitir el dominio correcto en producción
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:5173',
+  'https://pokemon-production-ab2a.up.railway.app',
+  'https://pokemon-production-50ba.up.railway.app'
+];
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Permitir solicitudes sin origin (como Postman) o si está en la lista
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS: ' + origin));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
